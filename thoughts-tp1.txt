@@ -1,0 +1,5 @@
+- igual al ejemplo de la mochila
+
+- la solucion es ordenar por bi/ti 
+
+- el tiempo la solución óptima siempre va a ser tomar el más chico, porque crecer va a crecer, pero lo mejor es que crezca de a poco, y el peso es mejor tener siempre al más pesado primero xq se va a multiplicar con tiempos cada vez más grandes
