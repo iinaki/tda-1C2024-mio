@@ -12,4 +12,28 @@
 
 # ESCALERA DE 3 PASOS
 def escalones(n):
-    return 1
+    if n == 0:
+        return 1
+    if n == 1:
+        return 1
+    if n == 2:
+        return 2
+    if n == 3:
+        return 4
+
+    M_E = [0] * (n + 1)
+
+    M_E[0] = 1
+    M_E[1] = 1
+    M_E[2] = 2
+    M_E[3] = 4
+
+    for i in range(4,n + 1):
+        M_E[i] = M_E[i - 1] + M_E[i - 2] + M_E[i - 3]
+
+    print(M_E)
+
+    return M_E[n]
+
+# tests
+print(escalones(10)) 
