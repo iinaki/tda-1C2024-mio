@@ -81,9 +81,8 @@ def numeros_posibles1(k, n):
     
     for i in range(10):
         dp[1][i] = 1
-    
-    # Movimientos válidos desde cada dígito
-    movimientos = {
+        
+    celular = {
         0: [0, 8],
         1: [1, 2, 4],
         2: [1, 2, 3, 5],
@@ -98,7 +97,7 @@ def numeros_posibles1(k, n):
     
     for l in range(2, n + 1):
         for d in range(10):
-            for vecino in movimientos[d]:
+            for vecino in celular[d]:
                 dp[l][d] += dp[l - 1][vecino]
     print(dp)
     return dp[n][k]
