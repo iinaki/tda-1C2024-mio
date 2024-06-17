@@ -31,3 +31,40 @@ def dominating_set_min(grafo):
     dominating_set_bck(grafo, [], mejor_solucion)
 
     return mejor_solucion
+
+# OTRA SOLUCION
+
+def es_dom_set(grafo, dom_set):
+    for v in grafo.obtener_vertices():
+        if v not in dom_set:
+            adjacent_covered = False
+            for ady in grafo.adyacentes(v):
+                if ady in dom_set:
+                    adjacent_covered = True
+                    break
+            if not adjacent_covered:
+                return False
+    return True
+
+def backtracking(grafo, dom_set_mejor, set_actual, vertice_actual):
+    if es_dom_set(grafo, set_actual):
+        if len(set_actual) < len(dom_set_mejor):
+            dom_set_mejor[:] = set_actual
+        return
+    
+    if vertice_actual == len(grafo.obtener_vertices()):
+        return
+    
+    if len(set_actual) > len(dom_set_mejor):
+        return
+
+    set_actual.append(grafo.obtener_vertices()[vertice_actual])
+    backtracking(grafo, dom_set_mejor, set_actual, vertice_actual + 1)
+
+    set_actual.pop()
+    backtracking(grafo, dom_set_mejor, set_actual, vertice_actual + 1)
+
+def dominating_set_min(grafo):
+    dom_set_mejor = grafo.obtener_vertices()
+    backtracking(grafo, dom_set_mejor, [], 0)
+    return dom_set_mejor
