@@ -1,43 +1,53 @@
-#Implementar un algoritmo que dado un Grafo no dirigido nos devuelva un conjunto de vértices que representen un mínimo Vertex Cover del mismo.
+def sol_trivial(grafo):
+    return [v for v in grafo]
 
-def vertex_cover_min(grafo):
-    vertex_cover = []
 
-    aristas = []
-    for v in grafo.obtener_vertices():
-        for w in grafo.adyacentes(v):
-            aristas.append((v, w))
-
-    while aristas:
-        v, w = aristas.pop()
-        if v not in vertex_cover:
-            vertex_cover.append(v)
-
-        if w not in vertex_cover:
-            vertex_cover.append(w)
-
-        aristas = [(x, y) for x, y in aristas if x != v and x != w and y != v and y != w]
-
-    return vertex_cover
-
-def _vertex_cover_min(grafo, v, visitados, vertex_cover):
-    visitados.add(v)
-    vertex_cover.append(v)
-    if len(visitados) == len(grafo):
-        return True
-    for w in grafo.adyacentes(v):
-        if w not in visitados: # Esta es en sí nuestra poda
-            if _vertex_cover_min(grafo, w, visitados, vertex_cover):
-                return True
-    visitados.remove(v)     # Permitiendo volver a venir a este vértice
-    vertex_cover.pop()            # por otro camino
-    return False
-
-def vertex_cover_min(grafo):
-    vertex_cover = []
-    visitados = set()  
+def count_of_vertices(grafo):
+    count = 0
     for v in grafo:
-        if _vertex_cover_min(grafo, v, visitados, vertex_cover):
-            return vertex_cover
-            
-    return None
+        for _ in grafo.adyacentes(v):
+            count += 1
+    return count // 2
+
+
+def es_solucion_vertex_cover(grafo, sol):
+    count = 0
+    visited = set()
+    for v in sol:
+        for w in grafo.adyacentes(v):
+            if v != w and (v, w) not in visited:
+                visited.add((v, w))
+                visited.add((w, v))
+                count += 1
+    return count == count_of_vertices(grafo)
+
+
+def es_mejor_solucion(grafo, sol, mejor_sol):
+    return es_solucion_vertex_cover(grafo, sol) and len(sol) < len(mejor_sol)
+
+def vertex_cover_min_bck(grafo, i, solucion_actual, mejor_sol):
+
+    if es_mejor_solucion(grafo, solucion_actual, mejor_sol):
+        mejor_sol[:] = solucion_actual[:]
+        return
+
+    if i == len(grafo) or len(solucion_actual) >= len(mejor_sol):
+        return
+
+    for v in grafo:
+        if v not in solucion_actual:
+            solucion_actual.append(v)
+            vertex_cover_min_bck(grafo, i + 1, solucion_actual, mejor_sol)
+            solucion_actual.pop()
+
+def vertex_cover_min(grafo):
+    if len(grafo) == 0:
+        return []
+
+    count = count_of_vertices(grafo)
+    primera_sol = sol_trivial(grafo)
+    mejor_sol = primera_sol[:]
+
+    vertex_cover_min_bck(grafo, 0, [], mejor_sol)
+
+    return mejor_sol
