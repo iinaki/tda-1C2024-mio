@@ -27,3 +27,44 @@ def mochila(elementos, W):
     
     res.reverse()  
     return res
+
+def subset_sum(elementos, v):
+    n = len(elementos)
+    valor = [elem for elem in elementos]
+    peso = [elem for elem in elementos]
+    
+    elementos = [(valor[i], peso[i]) for i in range(n)]
+
+    rta = mochila(elementos, v)
+    rta = list(map(lambda x: x[0], rta))
+
+    return rta
+
+# OTRA SOLUCION
+
+def subset_sum(elementos, v):
+    opt = [[0]*(len(elementos)+1) for _ in range(v+1)]
+    # valores -> i
+    # elementos -> j
+    for i in range(1, len(opt)):
+        for j in range(1, len(opt[i])):
+            if elementos[j-1] <= i:
+                opt[i][j] = max(opt[i][j-1], elementos[j-1] + opt[i-elementos[j-1]][j-1])
+            else:
+                opt[i][j] = opt[i][j-1]
+
+# mi óptimo va a ser, el max entre, no usar el elemento (me quedo con el resultado de los elementos anteriores, menos ese) o usarlo y buscar el óptimo de un valor más chico y sin ese elemento
+
+    # reconstruccion
+    solucion = []
+    i = v
+    j = len(elementos)
+    while i > 0 and j > 0:
+        if opt[i][j] != opt[i][j-1]:
+            solucion.append(elementos[j-1])
+            i -= elementos[j-1]
+        j -= 1
+
+    return list(reversed(solucion))
+
+# la forma del problema es que su dificultad aumenta, a más valor y más elementos.
