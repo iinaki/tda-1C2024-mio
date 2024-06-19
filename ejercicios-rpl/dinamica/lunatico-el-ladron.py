@@ -19,90 +19,57 @@
 
 # Esta ecuación representa cómo se calcula la ganancia máxima obtenible al robar cada casa, considerando la circularidad de la calle.
 
-def construir_G(ganancias, n):
-    G = [0] * n
-    G[0] = ganancias[0]
-    G[1] = max(ganancias[0], ganancias[1])
+# HACEMOS CON JUAN EL VAGO
 
-    for i in range(2, n - 1):
-        G[i] = max(ganancias[i] + G[i - 2], G[i - 1])
+def juan_el_vago(trabajos):
+    n = len(trabajos)
 
-    # i == n-1:
-    print("EN LA ULTIMA CASA ganancias[i] + G[i - 2] es", ganancias[i] + G[i - 2] - G[0], "y G[i - 1] es", G[i - 1], "y G[0] es", G[0])
-    # si inicialmente agarre la casa 0, y la ultima casa es la n-1, entonces la ultima casa no la puedo agarrar
-    G[n-1] = max(ganancias[i] + G[i - 2] , G[i - 1], G[0])
-    
-    return G
-
-    # ME COMBIENE EMPEZAR A LA DERECHA O A LA IZQUIERDA?
-
-
-# def construir_G(ganancias, n):
-#     G = [0] * n
-
-#     for i in range(n):
-#         if i == 0:
-#             opt_casa_anterior = ganancias[n - 1]
-#             opt_casa_anteanterior = ganancias[n - 2]
-#         elif i == 1:
-#             opt_casa_anterior = G[0]
-#             opt_casa_anteanterior = ganancias[n - 1]
-#         else:
-#             opt_casa_anterior = G[i - 1]
-#             opt_casa_anteanterior = G[i - 2]
-
-#         valor_actual = ganancias[i]
-
-#         G[i] = max(valor_actual + opt_casa_anteanterior, opt_casa_anterior)
-    
-#     return G
-
-
-def lunatico(ganancias):
-    n = len(ganancias)
-
+    # DINAMICA
     if n == 0:
         return []
-    if n == 1:
-        return [0]
 
-    G = construir_G(ganancias, n)
+    dp = [0] * n
+    dp[0] = trabajos[0]
 
-    print(G)
-    soluciones = []
-    d = n-1
-    while(d >= 0):
-        opt_casa_anterior = G[d - 1] if d > 0 else 0
-        opt_casa_anteanterior = G[d - 2] if d > 1 else 0
+    for i in range(1, n):
+        dp[i] = max(trabajos[i] + (dp[i - 2] if i >= 2 else 0), dp[i - 1])
 
-        valor_actual = ganancias[d]
-
-        # if valor_actual + opt_casa_anteanterior > opt_casa_anterior:
-        #     print("Robar casa", d)
-        #     soluciones.append(d)
-        #     d -= 2
-        # else:
-        #     d -= 1
-        if d == 0 or G[d] != G[d - 1]:
-            print("Robar casa", d)
-            if d == 0:
-                if soluciones[0] == n-1:
-                    soluciones.append(d)
-                    break
-
-            soluciones.append(d)
-            d -= 2
+    # RECONSTRUCCION
+    dias_trabajo = []
+    i = n - 1
+    while i >= 0:
+        if i == 0 or dp[i] != dp[i - 1]:
+            dias_trabajo.append(i)
+            i -= 2
         else:
-            d -= 1
+            i -= 1
 
-    soluciones.reverse()
+    dias_trabajo.reverse()
+    return dias_trabajo
 
-    return soluciones
+def lunatico(ganancias):
+    if len(ganancias) == 0:
+        return []
 
-# tests
+    if len(ganancias) == 1:
+        return [0]
+        
+    casas_no_circular = juan_el_vago(ganancias)
+    if (casas_no_circular[0] == 0 and casas_no_circular[-1] != len(ganancias) - 1) or (casas_no_circular[0] != 0 and casas_no_circular[-1] == len(ganancias) - 1) or (casas_no_circular[0] != 0 and casas_no_circular[-1] != len(ganancias) - 1):
+        return casas_no_circular
 
-test1 = [100, 20, 30, 70, 50]
-print(lunatico(test1)) # [1, 4]
+    ganancias_sin_ultima = ganancias[:-1]
+    ganancias_sin_primera = ganancias[1:]
 
-test2 = [100, 20, 30, 70, 50, 100]
-print(lunatico(test2)) # [1, 3, 6]
+    casas_sin_ultima = juan_el_vago(ganancias_sin_ultima)
+    casas_sin_primera = juan_el_vago(ganancias_sin_primera)
+    casas_sin_primera = [i + 1 for i in casas_sin_primera]
+
+    ganancias_sin_ultima = sum([ganancias[i] for i in casas_sin_ultima])
+    ganancias_sin_primera = sum([ganancias[i] for i in casas_sin_primera])
+
+    if ganancias_sin_ultima > ganancias_sin_primera:
+        return casas_sin_ultima
+    else:
+        return casas_sin_primera
+    
