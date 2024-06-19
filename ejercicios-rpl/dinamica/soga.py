@@ -18,3 +18,19 @@ def cutting_rope(n):
                 actual_max = local_max
         dp[i] = actual_max
     return dp
+
+
+def problema_soga(n):
+    OPT = [0 for _ in range(n + 1)]
+    OPT[1] = 1
+    OPT[2] = 1
+    for i in range(3, n + 1):
+        maximo = 0
+        for j in range(1, i):
+            maximo_local = max(j * (i - j), j * OPT[i - j],OPT[j] * (i-j) , OPT[j] * OPT[i - j])
+            if maximo_local > maximo:
+                maximo = maximo_local
+
+        OPT[i] = maximo
+    
+    return OPT[n]
